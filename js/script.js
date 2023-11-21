@@ -151,9 +151,8 @@ window.addEventListener('DOMContentLoaded', () => {
 					<div class="menu__item-total"><span>${this.price}</span> руб./день</div>
 				</div>				
 			`;
-			this.parentSelector.append(element); // метод append() добавляет в container новый element
-				
-			console.log(this.classes);
+			this.parentSelector.append(element); // метод append() добавляет в container новый element				
+			// console.log(this.classes);
 		}
 	}
 	new MenuCards(
@@ -164,8 +163,8 @@ window.addEventListener('DOMContentLoaded', () => {
 		9,
 		'.menu .container',
 		'menu__item',  // классы успешно добавляются
-		'first', // классы успешно добавляются
-		'first__green', // классы успешно добавляются
+		// 'first', // классы успешно добавляются
+		// 'first__green', // классы успешно добавляются
 	).render(); // заполняем новый класс MenuCards с помощью метода render()
 	new MenuCards(
 		'img/tabs/elite.jpg',
@@ -175,8 +174,8 @@ window.addEventListener('DOMContentLoaded', () => {
 		14,
 		'.menu .container',
 		'menu__item',  // классы успешно добавляются
-		'second', // классы успешно добавляются
-		'second__blue', // классы успешно добавляются
+		// 'second', // классы успешно добавляются
+		// 'second__blue', // классы успешно добавляются
 	).render(); // заполняем новый класс MenuCards с помощью метода render()
 	new MenuCards(
 		'img/tabs/post.jpg',
@@ -186,8 +185,53 @@ window.addEventListener('DOMContentLoaded', () => {
 		21,
 		'.menu .container',
 		'menu__item',  // классы успешно добавляются
-		'third', // классы успешно добавляются
-		'third__red',  // классы успешно добавляются
+		// 'third', // классы успешно добавляются
+		// 'third__red',  // классы успешно добавляются
 	).render(); // заполняем новый класс MenuCards с помощью метода render()
+
+	// SEND-FORMS------------------------------------------------------------------------
+	const forms = document.querySelectorAll('form');
+	const message = {
+		loading: 'Загрузка...',
+		success: 'Спасибо! Скоро с Вами свяжемся!',
+		failure: 'Что-то пошло не так...',
+	};
+	forms.forEach(item => { // берем все созданные формы и подвязываем функцию postData
+		postData(item);
+	});
+	function postData(form) { // передавать будем какую-то форму, очень удобно навесить на нее обработчик события submit, которое будет срабатывать каждый раз при отправке форм
+		form.addEventListener('submit', (e) => {
+			e.preventDefault(); // отменяем дефолтную перезагрузку и поведение браузера
+			const statusMessage = document.createElement('div'); // создаем блок для сообщений
+			statusMessage.classList.add('status'); // добавляем класс блоку сообщений
+			statusMessage.textContent = message.loading; // заполняем блок главным сообщением 'Загрузка...'
+			form.append(statusMessage); // к форме добавляем это сообщение 'Загрузка...'
+			const request = new XMLHttpRequest(); // создаем новый объект для формирования документа запроса
+			request.open('POST', 'server.php');
+			// request.setRequestHeader('Content-type', 'multipart/form-data'); // задаем заголовок контента для php...НО, В СВЯЗКЕ XMLHttpRequest() И FormData() - ЗАГОЛОВОК УСТАНАВЛИВАТЬ НЕ НУЖНО!!!
+			request.setRequestHeader('Content-type', 'application/json'); // задаем заголовок контента для отправки в формате json, если этого затребует бэкэндер
+			const formData = new FormData(form); // FormData(form) отыскивает в html атрибут name в тегах input всех форм, без него работать не будет!!!
+			const objectJson = {}; // сождал новый объект для отправки данных в формате json
+			formData.forEach(function(value, key) { // forEach переберет все, что есть внутри formData и заполнит objectJson
+				objectJson[key] = value;
+			});
+			const json = JSON.stringify(objectJson); // конвертируем objectJson в строку JSON с двойными ковычками
+			request.send(json); // отправляем запрос в формате json
+			// request.send(formData); // отправляем вновь созданный объект formData КОММЕНТИРУЕМ/РАЗКОММЕНТИРУЕМ НУЖНЫЙ ФОРМАТ ОТПРАВКИ php/json
+			request.addEventListener('load', () => {
+				if (request.status === 200) {
+					console.log(request.response);
+					statusMessage.textContent = message.success; // и так как statusMessage теперь стал DOM узлом на странице html, помещаем соощение 'Спасибо! Скоро с Вами свяжемся!'
+					form.reset(); // очищаем форму после выведением сообщения
+					setTimeout(() => {
+						statusMessage.remove();
+					}, 4000); // очистка формы через 4 секунды
+				} else {
+					statusMessage.textContent = message.failure; // если произошел сбой, то помещаем 'Что-то пошло не так...'
+				}
+			});
+		}); 
+	}
+
 
 });
