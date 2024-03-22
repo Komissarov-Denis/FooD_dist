@@ -1358,7 +1358,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": function() { return /* binding */ cards; }
 /* harmony export */ });
 /* harmony import */ var _services_services_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/services.js */ "./src/js/services/services.js");
-/* eslint-disable linebreak-style */
 
 
 // CLASSES-for-CARDS--------------------------------------------------
@@ -1854,21 +1853,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ tabs; }
 /* harmony export */ });
-/* eslint-disable linebreak-style */
 // TABS-----------------------------------------------------------
 function tabs(tabsSelector, tabsContentSelector, tabsParentSelector, activeClass) {
-  const tabs = document.querySelectorAll(tabsSelector);
-  const tabsContent = document.querySelectorAll(tabsContentSelector);
-  const tabsParent = document.querySelector(tabsParentSelector);
+  const tabs = document.querySelectorAll(tabsSelector); // '.tabheader__item'
+  const tabsContent = document.querySelectorAll(tabsContentSelector); // '.tabcontent'
+  const tabsParent = document.querySelector(tabsParentSelector); // '.tabheader__items'
   function hideTabContent() {
     // функция скрывает часть табов
     tabsContent.forEach(item => {
+      // перебираем каждый элемент псевдомассива методом forEach()
       // item.style.display = 'none';
       item.classList.add('hide');
-      item.classList.remove('show', 'fade');
+      item.classList.remove('show', 'fade'); // toggle() не подходит, так как это наведет кашу в классах, можно добавить список классов
     });
     tabs.forEach(item => {
-      item.classList.remove(activeClass);
+      item.classList.remove(activeClass); // 'tabheader__item_active' - точку не ставим, так как уже метод classList() на это указывает
     });
   }
   function showTabContent(i = 0) {
@@ -1876,21 +1875,22 @@ function tabs(tabsSelector, tabsContentSelector, tabsParentSelector, activeClass
     // tabsContent[i].style.display = 'block';
     tabsContent[i].classList.add('show', 'fade');
     tabsContent[i].classList.remove('hide');
-    tabs[i].classList.add(activeClass);
+    tabs[i].classList.add(activeClass); // 'tabheader__item_active' - точку не ставим, так как уже метод classList() на это указывает
   }
   hideTabContent();
   showTabContent();
   tabsParent.addEventListener('click', event => {
+    // применим делегирование событий для tabsParent или '.tabheader__items' по клику
     const target = event.target; // ЧАСТОЕ ИСПОЛЬЗОВАНИЕ event.target УДОБНО ПЕРЕОПРЕДЕЛИТЬ В ПЕРЕМЕННУЮ!!!
     if (target && target.classList.contains(tabsSelector.slice(1))) {
-      // убираем точку у селектора '.tabheader__item'
+      // проверяем на ниличие целевого события и что точно кликнули в tabs, а не в родителя; убираем точку у селектора '.tabheader__item'
       tabs.forEach((item, i) => {
-        // для каждого элемента item (tab) с номером i в массиве
+        // перебираем каждый элемент псевдомассива методом forEach(), т.е. каждый элемент/таб - item с номером i по порядку в псевдомассиве tabs
         if (target == item) {
-          // если целевое событие соответствует этому элементу по клику
-          hideTabContent();
-          showTabContent(i); // при переключении tab скрываем остальные
-        }
+          // если целевое событие соответствует этому элементу по клику, т.е. если элемент/таб псевдомассива совпадает с элементом/табом, в который кликнул пользователь:
+          hideTabContent(); // => тогда все лишние элементы скрываем со страницы
+          showTabContent(i); // => тогда берем его номер и показываем на странице
+        } // если кликнули в 3-й таб, то метод forEach() перебирает все табы, когда доходит до третьего, первые два и последний четвертый скрыты, а третьему назначаются классы 'show', 'fade'
       });
     }
   });
@@ -1909,19 +1909,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ timer; }
 /* harmony export */ });
-/* eslint-disable linebreak-style */
 // TAIMER-(обратного отсчета)-------------------------------------
 function timer(id, deadLine) {
+  // timer('.timer', '2024-03-25T11:57:00.000+03:00');
+
   // const deadLine = '2023-12-31'; // переводим в миллисекунды строку, создав новую переменную в виде строки... setClock('.timer', deadLine);
   function getTimeRemaining(endTime) {
-    // функция оставшегося времени определяет разницу между deadLine (endTime) и текущим временем (new Date())
-    const t = Date.parse(endTime) - Date.parse(new Date()); // метод Date.parse - переводит строку в миллисекунды
-    const days = Math.floor(t / (1000 * 60 * 60 * 24)); // Math.floor - округление до ближайшего целого (миллисек * сек * мин * час в сутках)!
-    const hours = Math.floor(t / (1000 * 60 * 60) % 24); // % - остаток от деления, например 50 / 24 = 2 дня и 2 часа, возвращаем 2 часа!
-    const minutes = Math.floor(t / 1000 / 60 % 60);
-    const seconds = Math.floor(t / 1000 % 60);
+    // функция оставшегося времени 
+    let days, hours, minutes, seconds;
+    const t = Date.parse(endTime) - Date.parse(new Date()); // определяем разницу между deadLine (endTime) и текущим временем (new Date()) в миллисекундах
+    // console.log(Date.parse(new Date())); // получил: 1711099417000 миллисекунд, метод Date.parse() - переводит строку в миллисекунды
+    // console.log(new Date()); // Fri Mar 22 2024 12:21:51 GMT+0300 (Москва, стандартное время)
+    if (t <= 0) {
+      days = 0;
+      hours = 0;
+      minutes = 0;
+      seconds = 0;
+    } else {
+      days = Math.floor(t / (1000 * 60 * 60 * 24)); // определяем оставшееся количество дней, Math.floor() - округление до ближайшего целого (миллисек * сек * мин * час в сутках)!
+      hours = Math.floor(t / (1000 * 60 * 60) % 24); // определяем оставшееся количество часов, % - остаток от деления, например 50 / 24 = 2 дня и 2 часа, возвращаем 2 часа!
+      minutes = Math.floor(t / 1000 / 60 % 60); //  определяем оставшееся количество минут
+      seconds = Math.floor(t / 1000 % 60); //  определяем оставшееся количество секунд
+    }
     return {
-      // создаем объект!!!
+      // останавливает выполнение функции getTimeRemaining() и возвращает наружу данные расчета в виде объекта!!!
       'total': t,
       'days': days,
       'hours': hours,
@@ -1930,34 +1941,54 @@ function timer(id, deadLine) {
     };
   }
   function getZero(num) {
-    // функция подставления 0 до двузначного числа!!!
+    // функция подставления 0 до двузначного числа и вывода информации 0 при остановке таймера!!!
     if (num >= 0 && num < 10) {
-      return `0${num}`;
-    } else {
-      return num;
+      return `0${num}`; // возвращаем измененное значение в виде строки с нулем вначале - при выводе однозначного числа
+    }
+    // else if (num < 0) {
+    // 	return '00'; // при отрицательном значении -  возвращаем нуль
+    // }
+    else {
+      return num; // в остальных случаях выводим двузначное число
     }
   }
   function setClock(selector, endTime) {
-    const timer = document.querySelector(selector); // это div.timer так как setClock('.timer', deadLine);
+    // функция установки таймера на страничку
+    const timer = document.querySelector(selector); // это div.timer так как setClock(id, deadLine) === timer('.timer', '2024-03-25T11:57:00.000+03:00')
     const days = timer.querySelector('#days');
     const hours = timer.querySelector('#hours');
     const minutes = timer.querySelector('#minutes');
     const seconds = timer.querySelector('#seconds');
-    const timeInterval = setInterval(updateClock, 1000); // функция updateClock будет запускаться каждые 1000 миллисекунд
+    const timeInterval = setInterval(updateClock, 1000); // функция timeInterval() будет обновлять каждые 1000 миллисекунд таймер === функция updateClock(), с помощью метода setInterval()
     updateClock(); // функция запускается один раз первоначально, для избежания мигания таймера, потом устанавливается setInterval в 1000 миллисекунд
     function updateClock() {
       // расчет времени на данную секунду, разница между планируемым временем и текущим
-      const t = getTimeRemaining(endTime); // расчет времени запишется на страницу
-      days.innerHTML = getZero(t.days);
-      hours.innerHTML = getZero(t.hours);
-      minutes.innerHTML = getZero(t.minutes);
-      seconds.innerHTML = getZero(t.seconds);
+      const t = getTimeRemaining(endTime); // расчет времени запишется на страницу, применим полученные данные из возвращенного объекта функции getTimeRemaining()
+      days.innerHTML = getZero(t.days); // заполняем данными страницу HTML
+      hours.innerHTML = getZero(t.hours); // заполняем данными страницу HTML
+      minutes.innerHTML = getZero(t.minutes); // заполняем данными страницу HTML
+      seconds.innerHTML = getZero(t.seconds); // заполняем данными страницу HTML
       if (t.total <= 0) {
-        clearInterval(timeInterval); // останавливаем таймер как только время выйдет, когда (new Date()) будет больше (endTime)
+        clearInterval(timeInterval); // останавливаем таймер как только время выйдет, когда (new Date()) будет больше (endTime), т.е. уйдет в минус
       }
     }
   }
   setClock(id, deadLine);
+  function showEndTime(endTime) {
+    const time = new Date(endTime);
+    const endDate = document.querySelector('.promotion__end-date');
+    const yearBlock = endDate.querySelector('#year');
+    const monthBlock = endDate.querySelector('#month');
+    const dayBlock = endDate.querySelector('#day');
+    const hourBlock = endDate.querySelector('#hour');
+    const minBlock = endDate.querySelector('#min');
+    yearBlock.innerHTML = getZero(time.getFullYear());
+    monthBlock.innerHTML = getZero(time.getMonth() + 1);
+    dayBlock.innerHTML = getZero(time.getDate());
+    hourBlock.innerHTML = getZero(time.getHours());
+    minBlock.innerHTML = getZero(time.getMinutes());
+  }
+  showEndTime(deadLine); // 2024-03-25T00:00:00.000+03:00
 }
 
 /***/ }),
@@ -2087,7 +2118,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_forms_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/forms.js */ "./src/js/modules/forms.js");
 /* harmony import */ var _modules_carousel_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/carousel.js */ "./src/js/modules/carousel.js");
 /* harmony import */ var _modules_calculator_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/calculator.js */ "./src/js/modules/calculator.js");
-/* eslint-disable linebreak-style */
  // добавил полифилы из node_modules после установки в package.json
  // добавил полифилы из node_modules после установки в package.json
 
@@ -2103,10 +2133,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const modalTimerId = setTimeout(() => (0,_modules_modal_js__WEBPACK_IMPORTED_MODULE_5__.openModalWindow)('.modal', modalTimerId), 60000); // функция автооткрытия модального окна
 
   // TABS-----------------------------------------------------------
-  (0,_modules_tabs_js__WEBPACK_IMPORTED_MODULE_2__["default"])('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
+  (0,_modules_tabs_js__WEBPACK_IMPORTED_MODULE_2__["default"])('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active'); // передаем в вызов функции tabs() соответствующие аргументы из модуля: =>
+  // tabs(tabsSelector, tabsContentSelector, tabsParentSelector, activeClass)
 
   // TAIMER-(обратного отсчета)-------------------------------------
-  (0,_modules_timer_js__WEBPACK_IMPORTED_MODULE_4__["default"])('.timer', '2024-01-25');
+  (0,_modules_timer_js__WEBPACK_IMPORTED_MODULE_4__["default"])('.timer', '2024-03-22T19:03:00.000+03:00'); // где YYYY-MM-DDTHH:mm:ss.sss GMT+3, Т - разделитель TIME!!!
+  // timer(id, deadLine)
 
   // MODAL----------------------------------------------------------	
   (0,_modules_modal_js__WEBPACK_IMPORTED_MODULE_5__["default"])('[data-modal]', '.modal', modalTimerId);
