@@ -1364,7 +1364,7 @@ __webpack_require__.r(__webpack_exports__);
 function cards() {
   class MenuCards {
     constructor(srcImg, altText, title, descr, price, parentSelector, ...classes) {
-      // добавил REST оператор, так как не известно - будут ли еще изменения в карточках меню
+      // добавил REST оператор (...classes), так как не известно - будут ли еще изменения в карточках меню
       this.srcImg = srcImg;
       this.altText = altText;
       this.title = title;
@@ -1372,22 +1372,22 @@ function cards() {
       this.price = price;
       this.transfer = 100; // курс доллара к рублю
       this.classes = classes;
-      this.parentSelector = document.querySelector(parentSelector); // тут теперь лежит DOM  элемент!!!			
-      this.changeToRub(); // вызываем метод после построения всех свойств объекта
+      this.parentSelector = document.querySelector(parentSelector); // тут теперь лежит DOM  элемент от родителького селектора '.menu .container'!!!	
+      this.changeToRub(); // создаем changeToRub() - метод конвертирования цены из долларов в рубли после построения всех свойств объекта
     }
     changeToRub() {
       this.price = +this.price * this.transfer;
     }
     render() {
-      // классическое название для формирование верстки
+      // классическое название для формирование верстки - метод render()
       const element = document.createElement('div');
       if (this.classes.length === 0) {
-        // если у массива this.classes нет классов, то присваиваем класс menu__item всем div элементам
+        // если у массива this.classes нет классов, то присваиваем класс 'menu__item' всем div элементам
         this.element = 'menu__item';
         element.classList.add(this.element);
       } else {
         // если у массива this.classes хоть один класс присутствует, то добавляем класс
-        this.classes.forEach(className => element.classList.add(className)); // для каждого элемента массива обращаемся к classList созданного в element div и добавляю каждый класс, который находится в массиве className				
+        this.classes.forEach(className => element.classList.add(className)); // для каждого элемента массива обращаемся к classList созданного в element div и добавляем каждый класс, который находится в массиве className				
       }
       element.innerHTML = `					
 				<img src=${this.srcImg} alt=${this.altText}>
@@ -1399,8 +1399,11 @@ function cards() {
 					<div class="menu__item-total"><span>${this.price}</span> руб./день</div>
 				</div>				
 			`;
-      this.parentSelector.append(element); // метод append() добавляет в container новый element				
-      // console.log(this.classes);
+      this.parentSelector.append(element); // метод append() добавляет в container новый element
+
+      const replacerCard = element.parentElement;
+      console.log(replacerCard);
+      // console.log(Array.from(replacerCard)); 
     }
   }
   // getResources('http://localhost:3000/menu') => еще вариант формирования MenuCards
@@ -1435,6 +1438,7 @@ function cards() {
       new MenuCards(img, altimg, title, descr, price, '.menu .container').render(); // запускаем конструктор - MenuCards() для заполнения - render() карточек меню столько раз, сколько объектов в массиве db.json
     });
   });
+
   // new MenuCards(    => заменили верстку динамическим формированием MenuCards с помощью запросов к серверу
   // 	'img/tabs/vegy.jpg',
   // 	'vegy',
@@ -1445,7 +1449,7 @@ function cards() {
   // 	'menu__item',  // классы успешно добавляются
   // 	// 'first', // классы успешно добавляются
   // 	// 'first__green', // классы успешно добавляются
-  // ).render(); // заполняем новый класс MenuCards с помощью метода render()
+  // ).render(); // заполняем новый класс MenuCards с помощью метода render(), карточка создастся, заполнится и метод удалится, так как на него не будет больше ссылок
   // new MenuCards(
   // 	'img/tabs/elite.jpg',
   // 	'elite',
@@ -1456,7 +1460,7 @@ function cards() {
   // 	'menu__item',  // классы успешно добавляются
   // 	// 'second', // классы успешно добавляются
   // 	// 'second__blue', // классы успешно добавляются
-  // ).render(); // заполняем новый класс MenuCards с помощью метода render()
+  // ).render(); // заполняем новый класс MenuCards с помощью метода render(), карточка создастся, заполнится и метод удалится, так как на него не будет больше ссылок
   // new MenuCards(
   // 	'img/tabs/post.jpg',
   // 	'post',
@@ -1467,7 +1471,10 @@ function cards() {
   // 	'menu__item',  // классы успешно добавляются
   // 	// 'third', // классы успешно добавляются
   // 	// 'third__red',  // классы успешно добавляются
-  // ).render(); // заполняем новый класс MenuCards с помощью метода render()
+  // ).render(); // заполняем новый класс MenuCards с помощью метода render(), карточка создастся, заполнится и метод удалится, так как на него не будет больше ссылок
+
+  // const replacedCard = document.querySelectorAll('.menu__item');
+  // console.log(replacedCard);
 }
 
 /***/ }),
@@ -1690,7 +1697,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _modal_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal.js */ "./src/js/modules/modal.js");
 /* harmony import */ var _services_services_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/services.js */ "./src/js/services/services.js");
-/* eslint-disable linebreak-style */
 
 
 
@@ -1794,19 +1800,19 @@ function openModalWindow(modalSelector, modalTimerId) {
   // console.log(modalTimerId);
   if (modalTimerId) {
     // если modalTimerId был передан, то только тогда будет запускаться clearInterval()
-    clearInterval(modalTimerId); // если пользователь сам зарыл модальное окно, сбрасываем интервал его автооткрытия
+    clearInterval(modalTimerId); // если пользователь сам закрыл модальное окно, сбрасываем интервал его автооткрытия
   }
 }
 function closeModalWindow(modalSelector) {
   const modalWindow = document.querySelector(modalSelector);
   modalWindow.classList.add('hide');
   modalWindow.classList.remove('show');
-  document.body.style.overflow = ''; // при закрытии модального окна, включаем скролл страницы
+  document.body.style.overflow = ''; // только при закрытии модального окна, включается скролл страницы
 }
 function modal(triggerSelector, modalSelector, modalTimerId) {
   // => modal('[data-modal]', '.modal', modalTimerId); добавим два аргумента triggerSelector, modalSelector для инкапсуляции 
-  const modalTrigger = document.querySelectorAll(triggerSelector);
-  const modalWindow = document.querySelector(modalSelector);
+  const modalTrigger = document.querySelectorAll(triggerSelector); // '[data-modal]'
+  const modalWindow = document.querySelector(modalSelector); // '.modal'
   // const modalCloseBtn = document.querySelector('[data-close]'); // для ДЕЛЕГИРОВАНИЯ СОБЫТИЙ убираем данную переменную
   modalTrigger.forEach(btn => {
     btn.addEventListener('click', () => openModalWindow(modalSelector, modalTimerId)); // переданная в обработчик события коллбэк функция openModalWindow(modalSelector)) не дожна сразу вызываться, а просто объявляться, () => стрелочная функция оборачивает коллбэк и вызывает его по клику
@@ -1814,21 +1820,22 @@ function modal(triggerSelector, modalSelector, modalTimerId) {
   // modalCloseBtn.addEventListener('click', closeModalWindow); // для ДЕЛЕГИРОВАНИЯ СОБЫТИЙ убираем данную часть
   modalWindow.addEventListener('click', e => {
     if (e.target === modalWindow || e.target.getAttribute('data-close') == '') {
-      // если по клику целевое событие совпадает с модальным окном, то модальное окно закрывается
-      closeModalWindow(modalSelector); // для ДЕЛЕГИРОВАНИЯ СОБЫТИЙ добавляем условие  || e.target.getAttribute('data-close') == '' т.е. когда в елементе есть data-close со значение пустой строки, кликаем на подложку или крестик - окно закрывается		
+      // если куда кликнул пользователь (целевое событие) совпадает с модальным окном, то модальное окно закрывается
+      closeModalWindow(modalSelector); // для ДЕЛЕГИРОВАНИЯ СОБЫТИЙ добавляем условие  || e.target.getAttribute('data-close') == '' т.е. когда в елементе есть data-close со значением пустой строки, кликаем на подложку или крестик - окно закрывается		
     }
   });
   document.addEventListener('keydown', e => {
+    // событие по нажатию клавиши 
     if (e.code === 'Escape' && modalWindow.classList.contains('show')) {
-      // по клавише ESC закрывается окно
-      closeModalWindow(modalSelector);
+      // метод code === 'Escape' отслеживает keydown - событие по нажатию клавишы ESC, что закрывает модальное окно
+      closeModalWindow(modalSelector); // также modalWindow.classList.contains('show')) проверяет наличие открытого модального окна, чтобы отработала функция closeModalWindow()
     }
   });
   function showModalWindowByScroll() {
-    if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-      // отслеживаем сколько пикселей по оси Y отлистал пользователь + высота видимой части сравниваются с высотой/прокруткой всего контента
+    if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1) {
+      // отслеживаем сколько пикселей по оси Y отлистал пользователь + высота видимой части сравниваются с высотой/прокруткой всего контента минус один пиксель
       openModalWindow(modalSelector, modalTimerId); // если они совпадают, то пользователь долистал до конца контена => открывается модальное окно, но при каждом долистовании!!!
-      window.removeEventListener('scroll', showModalWindowByScroll); // как только пользователь долистал до конца, модальное окно выйдет только ОДИН РАЗ!!!! УДАЛЯЕМ ОБРАБОТЧИК!!!
+      window.removeEventListener('scroll', showModalWindowByScroll); // как только пользователь долистал до конца, модальное окно выйдет только ОДИН РАЗ!!! УДАЛЯЕМ ОБРАБОТЧИК за счет removeEventListener()!!!
     } // нужно избежать подобных повторов, но =>
   } // }, {once: true}); в данном случае не подходит, так как единоразовая прокрутка на 1px вызывает это условие!!!
   window.addEventListener('scroll', showModalWindowByScroll); // отслеживаем событие scroll во всем окне браузера
@@ -2001,7 +2008,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getResources: function() { return /* binding */ getResources; },
 /* harmony export */   postData: function() { return /* binding */ postData; }
 /* harmony export */ });
-/* eslint-disable linebreak-style */
 const postData = async (url, data) => {
   // function expression -  без объявления присваивается в переменную, postData отвечает за постинг данных при отправке на сервер + async в связи с асинхронностью выполнения
   const result = await fetch(url, {
