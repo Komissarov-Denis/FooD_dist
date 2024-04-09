@@ -1395,7 +1395,8 @@ function cards() {
 				<div class="menu__item-divider"></div>
 				<div class="menu__item-price">
 					<div class="menu__item-cost">Цена:</div>
-					<div class="menu__item-total"><span>${this.price}</span> руб./день</div>
+					<div class="menu__item-total"><span>${this.price}</span></div>
+					<div>руб./день</div>
 				</div>				
 			`; // динамически создаем вложенную структуру каждого элемента div
       this.parentSelector.append(element); // метод append() добавляет на каждом шаге в конец родительского '.menu .container' новый DOM element/div
@@ -1715,8 +1716,8 @@ function forms(formSelector, modalTimerId) {
     failure: 'Что-то пошло не так...'
   };
   forms.forEach(item => {
-    // берем все созданные формы и подвязываем функцию bindpostData()
-    bindPostData(item);
+    // переберем все созданные 'form' и подвяжем под каждую из них функцию postData()
+    bindPostData(item); // в атрибут item передаем form == 'form'
   });
   function bindPostData(form) {
     // к функции будем (bind) привязывать какую-то форму, очень удобно навесить на нее обработчик события submit, =>
@@ -1726,7 +1727,7 @@ function forms(formSelector, modalTimerId) {
       // const statusMessage = document.createElement('div'); // создаем блок для сообщений
       const statusMessage = document.createElement('img'); // вместо блока 'div' теперь будем использовать картинку спиннера
       // statusMessage.classList.add('status'); // добавляем класс блоку сообщений
-      statusMessage.src = message.loading; // используем путь к спиннеру
+      statusMessage.src = message.loading; // указываем путь к спиннеру
       // statusMessage.textContent = message.loading; // заполняем блок главным сообщением 'Загрузка...'
       statusMessage.style.cssText = `
 				display: block;
@@ -1741,6 +1742,7 @@ function forms(formSelector, modalTimerId) {
       // formData.forEach(function(value, key) { // forEach переберет все, что есть внутри formData и заполнит objectJson
       // 	objectJson[key] = value;
       // });
+
       // postData('http://localhost:3000/requests', JSON.stringify(objectJson)) // конвертируем json в строку JSON с двойными ковычками =>
       // это упрощеная форма создания объекта objectJson, есть более элегантый способ  с помощью методов Json => берем formData и превращаем ее в массив массивов с помощью formData.entries(), 
 
@@ -1867,23 +1869,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 // SPINNER--------------------------------------------------------
 function spinner() {
-  const loadingClass = document.querySelectorAll('.loading');
+  const loadingClass = document.querySelectorAll('.loading'); // получаем все '.loading'
   loadingClass.forEach(item => {
-    showSpinner(item);
+    // переберем все созданные классы '.loading' и подвяжем под каждый из них функцию showSpinner()
+    showSpinner(item); // в атрибут item передаем loadingClass == '.loading'
   });
   function showSpinner(loadingClass) {
-    // console.log(loadingClass);
+    // создаем функцию showSpinner() с аргументом loadingClass == '.loading'
     const spinnerMessage = {
       loading: 'img/form/spinner.svg'
-    };
-    // console.log(spinnerMessage);
-    const spinnerImg = document.createElement('img');
-    // console.log(spinnerImg);
-    spinnerImg.src = spinnerMessage.loading;
-    // console.log();
-    // spinnerImg.textContent = spinnerMessage.loading;
-    // loadingClass.append(spinnerImg);
-    loadingClass.insertAdjacentElement('beforeEnd', spinnerImg);
+    }; // переменной spinnerMessage присваиваем картинку спиннера с указанием пути к ней
+    const spinnerImg = document.createElement('img'); // на странице html создаем элемент img внутри span.loading{}
+    spinnerImg.src = spinnerMessage.loading; // указываем путь к спиннеру
+    spinnerImg.style.cssText = `
+		display: block;
+		margin: 0 auto;
+		height: 38px;
+		width: 38px;
+	`;
+    loadingClass.insertAdjacentElement('beforeEnd', spinnerImg); // чтобы спиннер не сбивал верстку используем insertAdjacentElement(), первый аргумент - beforeEnd (куда вставляем), второй - что вставляем!!!
   }
 }
 
